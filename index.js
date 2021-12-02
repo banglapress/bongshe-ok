@@ -51,10 +51,19 @@ async function run() {
         });
 
 
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            console.log('hit the order api')
+            const result = await ordersCollection.insertOne(order);
+            res.json(result);
+        })
 
 
-
-
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
 
 
