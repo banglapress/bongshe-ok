@@ -19,8 +19,9 @@ async function run() {
     try {
         await client.connect();
 
-        const database = client.db('bongshe_portal');
+        const database = client.db('bongsheOK');
         const usersCollection = database.collection('users');
+        const ordersCollection = database.collection("orders");
 
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
