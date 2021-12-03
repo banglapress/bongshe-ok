@@ -45,6 +45,7 @@ async function run() {
         const database = client.db('bongsheOK');
         const usersCollection = database.collection('users');
         const ordersCollection = database.collection("orders");
+        const productsCollection = database.collection("products");
 
 
         app.get('/users/:email', async (req, res) => {
@@ -128,13 +129,17 @@ async function run() {
         })
         //--ok
 
+        app.post('/products', async (req, res) => {
+            const product = req.body;
+            const result = await productsCollection.insertOne(product);
+            res.json(result)
+        });
 
-
-        // app.get('/orders', async (req, res) => {
-        //     const cursor = ordersCollection.find({});
-        //     const result = await cursor.toArray();
-        //     res.send(result);
-        // })
+        app.get('/products', async (req, res) => {
+            const cursor = productsCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result);
+        })
 
 
 
