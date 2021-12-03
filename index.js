@@ -7,7 +7,7 @@ const ObjectId = require('mongodb').ObjectId;
 const admin = require("firebase-admin");
 
 
-const port = process.env.PORT || 5000 || 7000;
+const port = process.env.PORT || 5000;
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
@@ -18,11 +18,6 @@ admin.initializeApp({
 
 app.use(cors());
 app.use(express.json());
-
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    next();
-});
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dbsda.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 
@@ -51,28 +46,13 @@ async function run() {
         const usersCollection = database.collection('users');
         const ordersCollection = database.collection("orders");
 
-        app.post('/users', async (req, res) => {
-            const user = req.body;
-            const result = await usersCollection.insertOne(user);
-            console.log(result);
-            res.json(result)
-        })
-
-        app.put('/users', async (req, res) => {
-            const user = req.body;
-            const filter = { email: user.email };
-            const options = { upsert: true };
-            const updateDoc = { $set: user };
-            const result = await usersCollection.updateOne(filter, updateDoc, options);
-            res.json(result);
-        });
-
         app.get('/users', async (req, res) => {
             const cursor = usersCollection.find({});
             const result = await cursor.toArray();
             res.send(result);
         })
 
+        //--test
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
@@ -83,10 +63,26 @@ async function run() {
             }
             res.json({ admin: isAdmin });
         })
-
+        //--ok
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            console.log(result);
+            res.json(result)
+        })
+        //--ok
+        app.put('/users', async (req, res) => {
+            const user = req.body;
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = { $set: user };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+        //--ok
         app.put('/users/admin', verifyToken, async (req, res) => {
             const user = req.body;
-            const requster = req.decodedEmail;
+            const requester = req.decodedEmail;
             if (requester) {
                 const requesterAccount = await usersCollection.findOne({ email: requester });
                 if (requesterAccount.role === 'admin') {
@@ -100,7 +96,7 @@ async function run() {
                 res.status(403).json({ message: 'You do not have access to make an admin.' })
             }
         });
-
+        //--ok
 
         app.post('/orders', async (req, res) => {
             const order = req.body;
