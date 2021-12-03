@@ -4,9 +4,17 @@ const cors = require('cors');
 require('dotenv').config()
 const { MongoClient } = require('mongodb');
 const ObjectId = require('mongodb').ObjectId;
+const admin = require("firebase-admin");
 
 
 const port = process.env.PORT || 5000;
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
 
 app.use(cors());
 app.use(express.json());
@@ -87,6 +95,15 @@ async function run() {
             const cursor = ordersCollection.find(query);
             const orders = await cursor.toArray();
             res.json(orders);
+        })
+
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = { $set: { status: 'Shipped' } };
+            const result = await ordersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
         })
 
         app.delete('/orders/:id', async (req, res) => {
