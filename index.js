@@ -93,20 +93,6 @@ async function run() {
         })
         //--ok
 
-        app.post('/orders', async (req, res) => {
-            const order = req.body;
-            console.log('hit the order api')
-            const result = await ordersCollection.insertOne(order);
-            res.json(result);
-        })
-
-
-        app.get('/orders', async (req, res) => {
-            const cursor = ordersCollection.find({});
-            const result = await cursor.toArray();
-            res.send(result);
-        })
-
         app.get('/orders', verifyToken, async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
@@ -114,6 +100,23 @@ async function run() {
             const orders = await cursor.toArray();
             res.json(orders);
         })
+
+        //--ok
+
+        app.get('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await ordersCollection.findOne(query);
+            res.json(result);
+        })
+        //--ok
+
+        app.post('/orders', async (req, res) => {
+            const order = req.body;
+            const result = await ordersCollection.insertOne(order);
+            res.json(result);
+        })
+        //--ok
 
         app.put('/orders/:id', async (req, res) => {
             const id = req.params.id;
@@ -123,6 +126,18 @@ async function run() {
             const result = await ordersCollection.updateOne(filter, updateDoc, options);
             res.json(result);
         })
+        //--ok
+
+
+
+        // app.get('/orders', async (req, res) => {
+        //     const cursor = ordersCollection.find({});
+        //     const result = await cursor.toArray();
+        //     res.send(result);
+        // })
+
+
+
 
         app.delete('/orders/:id', async (req, res) => {
             const id = req.params.id;
