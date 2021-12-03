@@ -51,18 +51,6 @@ async function run() {
         const usersCollection = database.collection('users');
         const ordersCollection = database.collection("orders");
 
-        app.get('/users/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email };
-            const user = await usersCollection.findOne(query);
-            let isAdmin = false;
-            if (user.role === 'admin') {
-                isAdmin = true;
-            }
-            res.json({ admin: isAdmin });
-
-        })
-
         app.post('/users', async (req, res) => {
             const user = req.body;
             const result = await usersCollection.insertOne(user);
@@ -79,6 +67,23 @@ async function run() {
             res.json(result);
         });
 
+        app.get('/users', async (req, res) => {
+            const cursor = usersCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.findOne(query);
+            let isAdmin = false;
+            if (user.role === 'admin') {
+                isAdmin = true;
+            }
+            res.json({ admin: isAdmin });
+        })
+
         app.put('/users/admin', verifyToken, async (req, res) => {
             const user = req.body;
             const requster = req.decodedEmail;
@@ -94,9 +99,7 @@ async function run() {
             else {
                 res.status(403).json({ message: 'You do not have access to make an admin.' })
             }
-
         });
-
 
 
         app.post('/orders', async (req, res) => {
