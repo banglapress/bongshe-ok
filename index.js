@@ -97,21 +97,20 @@ async function run() {
         //--------------ORDERS API-------------------
 
         app.get('/orders', verifyToken, async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const cursor = ordersCollection.find(query);
+            const orders = await cursor.toArray();
+            res.json(orders);
+        })
+
+        //--ok
+
+        app.get('/orders', verifyToken, async (req, res) => {
             const cursor = ordersCollection.find({});
             const result = await cursor.toArray();
             res.send(result);
         })
-
-
-        // app.get('/orders', verifyToken, async (req, res) => {
-        //     const email = req.query.email;
-        //     const query = { email: email }
-        //     const cursor = ordersCollection.find(query);
-        //     const orders = await cursor.toArray();
-        //     res.json(orders);
-        // })
-
-        //--ok
 
         app.get('/orders/:id', async (req, res) => {
             const id = req.params.id;
