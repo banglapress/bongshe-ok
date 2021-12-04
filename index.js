@@ -99,16 +99,11 @@ async function run() {
 
         //last time --ok
         app.get('/orders', verifyToken, async (req, res) => {
-            const requester = req.decodedEmail;
-            console.log(requester)
-            if (requester) {
-                const requesterAccount = await usersCollection.findOne({ email: requester });
-                if (requesterAccount.role === 'admin') {
-
-                    const cursor = ordersCollection.find({});
-                    const orders = await cursor.toArray();
-                    res.send(orders);
-                }
+            const user = req.body;
+            if (user.role === 'admin') {
+                const cursor = ordersCollection.find({});
+                const orders = await cursor.toArray();
+                res.send(orders);
             }
             else {
                 res.status(403).json({ message: 'you do not have access to this' })
