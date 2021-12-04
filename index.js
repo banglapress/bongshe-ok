@@ -106,7 +106,7 @@ async function run() {
 
         //--ok
 
-        app.get('/orders', verifyToken, async (req, res) => {
+        app.get('/orders', async (req, res) => {
             const cursor = ordersCollection.find({});
             const result = await cursor.toArray();
             res.send(result);
