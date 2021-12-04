@@ -105,7 +105,14 @@ async function run() {
             res.json(orders);
         })
 
+        //--ok
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        })
 
+        //--ok
         app.put('/orders/:id', async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) }
@@ -114,25 +121,19 @@ async function run() {
             const result = await ordersCollection.updateOne(filter, updateDoc, options);
             res.json(result);
         })
-
-
+        //--ok
         app.get('/orders/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
-            const result = await ordersCollection.findOne(query);
-            res.json(result);
+            const order = await ordersCollection.findOne(query);
+            res.json(order);
         })
-        //--ok
-
 
         app.post('/orders', async (req, res) => {
             const order = req.body;
             const result = await ordersCollection.insertOne(order);
             res.json(result);
         })
-        //--ok
-
-
 
         app.delete('/orders/:id', async (req, res) => {
             const id = req.params.id;
