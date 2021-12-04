@@ -98,7 +98,7 @@ async function run() {
         //--------------ORDERS API-------------------
 
         //last time --ok
-        app.get('/orders', async (req, res) => {
+        app.get('/orders', verifyToken, async (req, res) => {
             const cursor = ordersCollection.find({});
             const orders = await cursor.toArray();
             res.send(orders);
