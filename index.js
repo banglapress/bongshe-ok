@@ -53,13 +53,13 @@ async function run() {
             const query = { email: email }
             const cursor = ordersCollection.find(query);
             const orders = await cursor.toArray();
-            res.send(orders);
+            res.json(orders);
         })
 
         app.get('/orders', async (req, res) => {
             const cursor = ordersCollection.find({});
             const orders = await cursor.toArray();
-            res.send(orders);
+            res.json(orders);
         })
         //--ok
         app.put('/orders/:id', async (req, res) => {
@@ -153,7 +153,7 @@ async function run() {
         app.get('/products', async (req, res) => {
             const cursor = productsCollection.find({});
             const result = await cursor.toArray();
-            res.send(result);
+            res.json(result);
         })
 
 
