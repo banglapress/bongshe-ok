@@ -98,24 +98,12 @@ async function run() {
         //--------------ORDERS API-------------------
 
         app.get('/orders', verifyToken, async (req, res) => {
-            const user = req.body;
-            if (user?.role === 'admin') {
-                const cursor = ordersCollection.find({});
-                const orders = await cursor.toArray();
-                res.send(orders);
-                console.log(orders)
-            }
-        })
-
-
-        app.get('/orders', verifyToken, async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
             const cursor = ordersCollection.find(query);
             const orders = await cursor.toArray();
             res.json(orders);
         })
-
 
 
         app.put('/orders/:id', async (req, res) => {
