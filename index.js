@@ -94,13 +94,22 @@ async function run() {
         })
         //--ok
 
+        //--------------ORDERS API-------------------
+
         app.get('/orders', verifyToken, async (req, res) => {
-            const email = req.query.email;
-            const query = { email: email }
-            const cursor = ordersCollection.find(query);
-            const orders = await cursor.toArray();
-            res.json(orders);
+            const cursor = ordersCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result);
         })
+
+
+        // app.get('/orders', verifyToken, async (req, res) => {
+        //     const email = req.query.email;
+        //     const query = { email: email }
+        //     const cursor = ordersCollection.find(query);
+        //     const orders = await cursor.toArray();
+        //     res.json(orders);
+        // })
 
         //--ok
 
@@ -129,6 +138,14 @@ async function run() {
         })
         //--ok
 
+        app.delete('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await ordersCollection.deleteOne(query);
+            res.json(result);
+        })
+
+
         app.post('/products', async (req, res) => {
             const product = req.body;
             const result = await productsCollection.insertOne(product);
@@ -142,14 +159,6 @@ async function run() {
         })
 
 
-
-
-        app.delete('/orders/:id', async (req, res) => {
-            const id = req.params.id;
-            const query = { _id: ObjectId(id) }
-            const result = await ordersCollection.deleteOne(query);
-            res.json(result);
-        })
 
 
 
