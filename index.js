@@ -24,6 +24,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
 async function verifyToken(req, res, next) {
+
     if (req.headers?.authorization?.startsWith('Bearer ')) {
         const token = req.headers.authorization.split(' ')[1];
 
@@ -96,18 +97,7 @@ async function run() {
 
         //--------------ORDERS API-------------------
 
-
-        // app.get('/orders', async (req, res) => {
-        //     const cursor = ordersCollection.find({});
-        //     const result = await cursor.toArray();
-        //     res.send(result);
-        // })
-
-
-
-        //--ok
-
-        app.put('/orders', verifyToken, async (req, res) => {
+        app.get('/orders', verifyToken, async (req, res) => {
             const requester = req.decodedEmail;
             if (requester) {
                 const requesterAccount = await usersCollection.findOne({ email: requester });
@@ -118,10 +108,10 @@ async function run() {
                 }
             }
             else {
-                res.status(403).json({ message: 'you do not have access to this' })
+                res.status(403).json({ message: 'you do not have access to make admin' })
             }
+
         })
-        //
 
         app.get('/orders', verifyToken, async (req, res) => {
             const email = req.query.email;
@@ -131,6 +121,8 @@ async function run() {
             res.json(orders);
         })
 
+        //--ok
+
         app.get('/orders/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: ObjectId(id) };
@@ -138,6 +130,7 @@ async function run() {
             res.json(result);
         })
         //--ok
+
 
         app.post('/orders', async (req, res) => {
             const order = req.body;
