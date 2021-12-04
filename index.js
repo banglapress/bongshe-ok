@@ -96,6 +96,13 @@ async function run() {
 
         //--------------ORDERS API-------------------
 
+
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
         app.get('/orders', verifyToken, async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
@@ -106,11 +113,6 @@ async function run() {
 
         //--ok
 
-        app.get('/orders', async (req, res) => {
-            const cursor = ordersCollection.find({});
-            const result = await cursor.toArray();
-            res.send(result);
-        })
 
         app.get('/orders/:id', async (req, res) => {
             const id = req.params.id;
