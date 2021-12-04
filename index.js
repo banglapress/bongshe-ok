@@ -48,6 +48,29 @@ async function run() {
         const ordersCollection = database.collection("orders");
         const productsCollection = database.collection("products");
 
+        app.get('/orders', verifyToken, async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const cursor = ordersCollection.find(query);
+            const orders = await cursor.toArray();
+            res.json(orders);
+        })
+
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        })
+        //--ok
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = { $set: { status: 'Shipped' } };
+            const result = await ordersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        })
+
 
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
@@ -97,39 +120,7 @@ async function run() {
 
         //--------------ORDERS API-------------------
 
-        //last time --ok
-        app.get('/orders', verifyToken, async (req, res) => {
-            const user = req.body;
-            if (user.role === 'admin') {
-                const cursor = ordersCollection.find({});
-                const orders = await cursor.toArray();
-                res.send(orders);
-            }
-            else {
-                res.status(403).json({ message: 'you do not have access to this' })
-            }
 
-        })
-
-        app.get('/orders', verifyToken, async (req, res) => {
-            const email = req.query.email;
-            const query = { email: email }
-            const cursor = ordersCollection.find(query);
-            const orders = await cursor.toArray();
-            res.json(orders);
-        })
-
-
-
-        //--ok
-        app.put('/orders/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: ObjectId(id) }
-            const options = { upsert: true };
-            const updateDoc = { $set: { status: 'Shipped' } };
-            const result = await ordersCollection.updateOne(filter, updateDoc, options);
-            res.json(result);
-        })
         //--ok
         app.get('/orders/:id', async (req, res) => {
             const id = req.params.id;
