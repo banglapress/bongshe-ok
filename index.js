@@ -98,22 +98,6 @@ async function run() {
         //--------------ORDERS API-------------------
 
         app.get('/orders', verifyToken, async (req, res) => {
-            const requester = req.decodedEmail;
-            if (requester) {
-                const requesterAccount = await usersCollection.findOne({ email: requester });
-                if (requesterAccount.role === 'admin') {
-                    const cursor = ordersCollection.find({});
-                    const result = await cursor.toArray();
-                    res.send(result);
-                }
-            }
-            else {
-                res.status(403).json({ message: 'you do not have access to make admin' })
-            }
-
-        })
-
-        app.get('/orders', verifyToken, async (req, res) => {
             const email = req.query.email;
             const query = { email: email }
             const cursor = ordersCollection.find(query);
@@ -121,7 +105,22 @@ async function run() {
             res.json(orders);
         })
 
-        //--ok
+        app.get('/orders', async (req, res) => {
+            const cursor = ordersCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        })
+
+
+        app.put('/orders/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updateDoc = { $set: { status: 'Shipped' } };
+            const result = await ordersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        })
+
 
         app.get('/orders/:id', async (req, res) => {
             const id = req.params.id;
@@ -139,15 +138,7 @@ async function run() {
         })
         //--ok
 
-        app.put('/orders/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: ObjectId(id) }
-            const options = { upsert: true };
-            const updateDoc = { $set: { status: 'Shipped' } };
-            const result = await ordersCollection.updateOne(filter, updateDoc, options);
-            res.json(result);
-        })
-        //--ok
+
 
         app.delete('/orders/:id', async (req, res) => {
             const id = req.params.id;
@@ -156,6 +147,7 @@ async function run() {
             res.json(result);
         })
 
+        //Products API
 
         app.post('/products', async (req, res) => {
             const product = req.body;
