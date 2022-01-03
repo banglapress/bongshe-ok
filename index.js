@@ -164,10 +164,12 @@ async function run() {
             res.json(product);
         })
 
-
-
-
-
+        app.get('/purchase/:productId', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const product = await productsCollection.findOne(query);
+            res.json(product);
+        })
 
         //--------------------ei porjonto no change
     }
